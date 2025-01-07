@@ -146,8 +146,16 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
           e);
     }
     final Map<String, JobWorkerValue> workerConfigurationMap = new HashMap<>();
-    workerConfigurationMap.putAll(camundaClientProperties.getZeebe().getOverride());
-    workerConfigurationMap.putAll(camundaClientProperties.getOverride());
+    if (zeebeClientConfigurationProperties.getWorker().getOverride() != null) {
+      workerConfigurationMap.putAll(zeebeClientConfigurationProperties.getWorker().getOverride());
+    }
+    if (camundaClientProperties.getZeebe() != null
+        && camundaClientProperties.getZeebe().getOverride() != null) {
+      workerConfigurationMap.putAll(camundaClientProperties.getZeebe().getOverride());
+    }
+    if (camundaClientProperties.getOverride() != null) {
+      workerConfigurationMap.putAll(camundaClientProperties.getOverride());
+    }
     final String workerType = zeebeWorker.getType();
     if (workerConfigurationMap.containsKey(workerType)) {
       final JobWorkerValue jobWorkerValue = workerConfigurationMap.get(workerType);
