@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.client.CamundaClient;
 import io.camunda.client.impl.NoopCredentialsProvider;
-import io.camunda.spring.client.config.legacy.ZeebeClientStarterAutoConfigurationTest;
+import io.camunda.spring.client.config.legacy.CamundaClientStarterAutoConfigurationTest;
 import io.camunda.spring.client.configuration.CamundaAutoConfiguration;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(
     classes = {
       CamundaAutoConfiguration.class,
-      ZeebeClientStarterAutoConfigurationTest.TestConfig.class
+      CamundaClientStarterAutoConfigurationTest.TestConfig.class
     })
 public class CamundaClientConfigurationDefaultPropertiesTest {
 

@@ -20,10 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.client.CamundaClient;
-import io.camunda.client.api.JsonMapper;
+import io.camunda.client.impl.CamundaObjectMapper;
 import io.camunda.spring.client.configuration.CamundaAutoConfiguration;
 import io.camunda.spring.client.configuration.CamundaClientProdAutoConfiguration;
-import io.camunda.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import java.time.Duration;
 import java.util.Map;
@@ -33,9 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
@@ -58,13 +59,12 @@ import org.springframework.test.util.ReflectionTestUtils;
     })
 @ContextConfiguration(
     classes = {
-      CamundaAutoConfiguration.class,
-      ZeebeClientStarterAutoConfigurationTest.TestConfig.class,
-      JsonMapperConfiguration.class
+      CamundaClientStarterAutoConfigurationCustomJsonMapperTest.TestConfig.class,
+      CamundaAutoConfiguration.class
     })
-public class ZeebeClientStarterAutoConfigurationTest {
+public class CamundaClientStarterAutoConfigurationCustomJsonMapperTest {
 
-  @Autowired private JsonMapper jsonMapper;
+  @Autowired private io.camunda.client.api.JsonMapper jsonMapper;
   @Autowired private CamundaClientProdAutoConfiguration autoConfiguration;
   @Autowired private ApplicationContext applicationContext;
 
@@ -73,13 +73,15 @@ public class ZeebeClientStarterAutoConfigurationTest {
     assertThat(jsonMapper).isNotNull();
     assertThat(autoConfiguration).isNotNull();
 
-    final Map<String, JsonMapper> jsonMapperBeans =
-        applicationContext.getBeansOfType(JsonMapper.class);
+    final Map<String, io.camunda.client.api.JsonMapper> jsonMapperBeans =
+        applicationContext.getBeansOfType(io.camunda.client.api.JsonMapper.class);
     final Object objectMapper = ReflectionTestUtils.getField(jsonMapper, "objectMapper");
 
-    assertThat(jsonMapperBeans.size()).isEqualTo(1);
-    assertThat(jsonMapperBeans.containsKey("zeebeJsonMapper")).isTrue();
-    assertThat(jsonMapperBeans.get("zeebeJsonMapper")).isSameAs(jsonMapper);
+    assertThat(jsonMapperBeans.size()).isEqualTo(2);
+    assertThat(jsonMapperBeans.containsKey("overridingJsonMapper")).isTrue();
+    assertThat(jsonMapperBeans.get("overridingJsonMapper")).isSameAs(jsonMapper);
+    assertThat(jsonMapperBeans.containsKey("aSecondJsonMapper")).isTrue();
+    assertThat(jsonMapperBeans.get("aSecondJsonMapper")).isNotSameAs(jsonMapper);
     assertThat(objectMapper).isNotNull();
     assertThat(objectMapper).isInstanceOf(ObjectMapper.class);
     assertThat(((ObjectMapper) objectMapper).getDeserializationConfig()).isNotNull();
@@ -87,17 +89,21 @@ public class ZeebeClientStarterAutoConfigurationTest {
             ((ObjectMapper) objectMapper)
                 .getDeserializationConfig()
                 .isEnabled(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES))
-        .isFalse();
+        .isTrue();
     assertThat(
             ((ObjectMapper) objectMapper)
                 .getDeserializationConfig()
                 .isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES))
-        .isFalse();
+        .isTrue();
   }
 
   @Test
   void testClientConfiguration() {
     final CamundaClient client = applicationContext.getBean(CamundaClient.class);
+    final io.camunda.client.api.JsonMapper clientJsonMapper =
+        AopTestUtils.getUltimateTargetObject(client.getConfiguration().getJsonMapper());
+    assertThat(clientJsonMapper).isSameAs(jsonMapper);
+    assertThat(clientJsonMapper).isSameAs(applicationContext.getBean("overridingJsonMapper"));
     assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost:1234");
     assertThat(client.getConfiguration().getGrpcAddress().toString())
         .isEqualTo("https://localhost:1234");
@@ -116,9 +122,30 @@ public class ZeebeClientStarterAutoConfigurationTest {
   @EnableConfigurationProperties(CamundaClientProperties.class)
   public static class TestConfig {
 
-    @Bean
-    public ObjectMapper objectMapper() {
-      return new ObjectMapper();
+    @Primary
+    @Bean(name = "overridingJsonMapper")
+    public io.camunda.client.api.JsonMapper zeebeJsonMapper() {
+      final ObjectMapper objectMapper =
+          new ObjectMapper()
+              .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true)
+              .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true);
+      return new CamundaObjectMapper(objectMapper);
+    }
+
+    @Bean(name = "aSecondJsonMapper")
+    public io.camunda.client.api.JsonMapper aSecondJsonMapper() {
+      final ObjectMapper objectMapper =
+          new ObjectMapper()
+              .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true)
+              .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true);
+      return new CamundaObjectMapper(objectMapper);
+    }
+
+    @Bean(name = "jsonMapper")
+    public CamundaClientStarterAutoConfigurationCustomJsonMapperTest.JsonMapper jsonMapper() {
+      return new CamundaClientStarterAutoConfigurationCustomJsonMapperTest.JsonMapper();
     }
   }
+
+  private static final class JsonMapper {}
 }
