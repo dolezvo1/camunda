@@ -241,6 +241,7 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
     if (!configCache.containsKey("credentialsProvider")) {
       final OAuthCredentialsProviderBuilder credBuilder =
           CredentialsProvider.newCredentialsProviderBuilder()
+              .applyEnvironmentOverrides(false)
               .clientId(
                   getProperty(
                       "credentialsProvider.clientId",
