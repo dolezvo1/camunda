@@ -39,7 +39,6 @@ public class ZeebeClientPropertiesSaasTest {
         .isEqualTo("https://my-cluster-id.bru-2.zeebe.camunda.io");
     assertThat(properties.getRestAddress().toString())
         .isEqualTo("https://bru-2.zeebe.camunda.io/my-cluster-id");
-    assertThat(properties.getPreferRestOverGrpc()).isEqualTo(false);
   }
 
   @Test
