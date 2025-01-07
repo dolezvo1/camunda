@@ -161,4 +161,52 @@ public class CamundaClientAuthProperties {
   public void setScope(final String scope) {
     this.scope = scope;
   }
+
+  @Override
+  public String toString() {
+    return "CamundaClientAuthProperties{"
+        + "username='"
+        + username
+        + '\''
+        + ", password='"
+        + (password != null ? "***" : null)
+        + '\''
+        + ", clientId='"
+        + (clientId != null ? "***" : null)
+        + '\''
+        + ", clientSecret='"
+        + (clientSecret != null ? "***" : null)
+        + '\''
+        + ", issuer="
+        + issuer
+        + ", audience='"
+        + audience
+        + '\''
+        + ", scope='"
+        + scope
+        + '\''
+        + ", keystorePath='"
+        + keystorePath
+        + '\''
+        + ", keystorePassword='"
+        + (keystorePassword != null ? "***" : null)
+        + '\''
+        + ", keystoreKeyPassword='"
+        + (keystoreKeyPassword != null ? "***" : null)
+        + '\''
+        + ", truststorePath='"
+        + truststorePath
+        + '\''
+        + ", truststorePassword='"
+        + (truststorePassword != null ? "***" : null)
+        + '\''
+        + ", credentialsCachePath='"
+        + credentialsCachePath
+        + '\''
+        + ", connectTimeout="
+        + connectTimeout
+        + ", readTimeout="
+        + readTimeout
+        + '}';
+  }
 }
