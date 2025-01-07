@@ -222,6 +222,56 @@ public class CamundaClientProperties {
     this.enabled = enabled;
   }
 
+  @Override
+  public String toString() {
+    return "CamundaClientProperties{"
+        + "auth="
+        + auth
+        + ", identity="
+        + identity
+        + ", zeebe="
+        + zeebe
+        + ", executionThreads="
+        + executionThreads
+        + ", messageTimeToLive="
+        + messageTimeToLive
+        + ", maxMessageSize="
+        + maxMessageSize
+        + ", maxMetadataSize="
+        + maxMetadataSize
+        + ", caCertificatePath='"
+        + caCertificatePath
+        + '\''
+        + ", keepAlive="
+        + keepAlive
+        + ", overrideAuthority='"
+        + overrideAuthority
+        + '\''
+        + ", defaults="
+        + defaults
+        + ", override="
+        + override
+        + ", preferRestOverGrpc="
+        + preferRestOverGrpc
+        + ", grpcAddress="
+        + grpcAddress
+        + ", restAddress="
+        + restAddress
+        + ", deployment="
+        + deployment
+        + ", region='"
+        + region
+        + '\''
+        + ", clusterId='"
+        + clusterId
+        + '\''
+        + ", mode="
+        + mode
+        + ", enabled="
+        + enabled
+        + '}';
+  }
+
   public enum ClientMode {
     selfManaged,
     saas
