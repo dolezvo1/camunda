@@ -15,7 +15,6 @@
  */
 package io.camunda.spring.client.configuration;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -65,10 +64,6 @@ public class PropertyUtil {
     return property;
   }
 
-  private static <T> Supplier<T> noPropertySupplier() {
-    return () -> null;
-  }
-
   private static <T> T getPropertyFromSupplier(
       final Supplier<T> supplier, final String propertyName) {
     T property = null;
@@ -79,20 +74,5 @@ public class PropertyUtil {
       LOG.debug("Error while loading next property {}", propertyName, e);
     }
     return property;
-  }
-
-  public static <T> Supplier<T> prioritized(
-      final T defaultProperty, final List<Supplier<T>> suppliers) {
-    for (final Supplier<T> supplier : suppliers) {
-      try {
-        final T property = supplier.get();
-        if (property != null && !property.equals(defaultProperty)) {
-          return supplier;
-        }
-      } catch (final Exception e) {
-        // ignore
-      }
-    }
-    return () -> defaultProperty;
   }
 }
