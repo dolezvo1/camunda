@@ -18,6 +18,7 @@ package io.camunda.spring.client.properties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.spring.client.properties.CamundaClientProperties.ClientMode;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +46,7 @@ public class ZeebeClientPropertiesSaasTest {
   void shouldLoadDefaultsSaas() {
     assertThat(properties.getMode()).isEqualTo(ClientMode.saas);
     assertThat(properties.getAuth().getIssuer())
-        .isEqualTo("https://login.cloud.camunda.io/oauth/token");
+        .isEqualTo(URI.create("https://login.cloud.camunda.io/oauth/token"));
     assertThat(properties.getEnabled()).isEqualTo(true);
     assertThat(properties.getAuth().getAudience()).isEqualTo("zeebe.camunda.io");
     assertThat(properties.getAuth().getScope()).isEqualTo("zeebe-scope");
