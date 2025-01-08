@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.hc.core5.http.HttpStatus;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @ZeebeIntegration
@@ -153,6 +154,7 @@ public class UserTaskListenersTest {
    * </ul>
    */
   @Test
+  @Disabled("As this POC enables UTL job completion with variables")
   void shouldRejectCompleteTaskListenerJobCompletionWhenVariablesAreSet() {
     // given
     final int jobRetries = 2;
