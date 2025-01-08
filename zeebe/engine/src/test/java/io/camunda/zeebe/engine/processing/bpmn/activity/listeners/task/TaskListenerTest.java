@@ -582,9 +582,8 @@ public class TaskListenerTest {
   }
 
   @Test
-  @Ignore(
-      "Ignored due to task listener job completion rejection when variables payload is provided (issue #24056). Re-enable after implementing issue #23702.")
-  public void shouldMakeVariablesFromPreviousTaskListenersAvailableToSubsequentListeners() {
+  public void
+  shouldMakeVariablesFromPreviousCompletingTaskListenersAvailableToSubsequentListeners() {
     final long processInstanceKey =
         createProcessInstance(
             createProcessWithCompletingTaskListeners(listenerType, listenerType + "_2"));
@@ -606,8 +605,8 @@ public class TaskListenerTest {
 
   @Test
   @Ignore(
-      "Ignored due to task listener job completion rejection when variables payload is provided (issue #24056). Re-enable after implementing issue #23702.")
-  public void shouldNotExposeTaskListenerVariablesOutsideUserTaskScope() {
+      "This behaviour might change, so the variables provided while completing user task listener jobs will be merged to the process instance local scope")
+  public void shouldNotExposeCompletingTaskListenerVariablesOutsideUserTaskScope() {
     // given: deploy a process with a user task having complete TL and service task following it
     final long processInstanceKey =
         createProcessInstance(
@@ -640,8 +639,6 @@ public class TaskListenerTest {
   }
 
   @Test
-  @Ignore(
-      "Ignored due to task listener job completion rejection when variables payload is provided (issue #24056). Re-enable after implementing issue #23702.")
   public void shouldAllowTaskListenerVariablesInUserTaskOutputMappings() {
     // given: deploy a process with a user task having complete TL and service task following it
     final long processInstanceKey =
@@ -823,7 +820,9 @@ public class TaskListenerTest {
   }
 
   @Test
-  public void shouldRejectCompleteTaskListenerJobCompletionWhenVariablesAreSet() {
+  @Ignore(
+      "This case would not be relevant after enabling user task listener job completion with provided variables")
+  public void shouldRejectCompletingTaskListenerJobCompletionWhenVariablesAreSet() {
     // given
     final long processInstanceKey =
         createProcessInstance(createProcessWithCompletingTaskListeners(listenerType));
