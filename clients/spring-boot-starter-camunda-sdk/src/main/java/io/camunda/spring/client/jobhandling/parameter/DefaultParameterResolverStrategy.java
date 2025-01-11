@@ -41,7 +41,7 @@ public class DefaultParameterResolverStrategy implements ParameterResolverStrate
       return new ActivatedJobParameterResolver();
     } else if (isVariable(parameterInfo)) {
       // get() can be used savely here as isVariable() verifies that an annotation is present
-      final String variableName = getVariableValue(parameterInfo).get().name();
+      final String variableName = getVariableValue(parameterInfo).get().getName();
       return new VariableResolver(variableName, parameterType, jsonMapper);
     } else if (isVariablesAsType(parameterInfo)) {
       return new VariablesAsTypeResolver(parameterType);
