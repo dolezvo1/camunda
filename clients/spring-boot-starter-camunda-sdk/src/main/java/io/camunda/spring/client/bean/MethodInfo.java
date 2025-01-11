@@ -93,7 +93,7 @@ public class MethodInfo implements BeanInfo {
 
     final ArrayList<ParameterInfo> result = new ArrayList<>();
     for (int i = 0; i < parameters.length; i++) {
-      result.add(new ParameterInfo(parameters[i], parameterNames[i]));
+      result.add(new ParameterInfo(this, parameters[i], parameterNames[i]));
     }
     return result;
   }
@@ -122,7 +122,7 @@ public class MethodInfo implements BeanInfo {
     final ArrayList<ParameterInfo> result = new ArrayList<>();
     for (int i = 0; i < parameters.length; i++) {
       if (parameters[i].isAnnotationPresent(type)) {
-        result.add(new ParameterInfo(parameters[i], parameterNames[i]));
+        result.add(new ParameterInfo(this, parameters[i], parameterNames[i]));
       }
     }
     return result;
