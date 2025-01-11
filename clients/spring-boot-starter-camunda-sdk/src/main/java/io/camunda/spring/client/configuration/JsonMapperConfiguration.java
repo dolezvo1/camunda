@@ -32,7 +32,7 @@ public class JsonMapperConfiguration {
     this.objectMapper = objectMapper;
   }
 
-  @Bean(name = "zeebeJsonMapper")
+  @Bean(name = "camundaJsonMapper")
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper() {
     if (objectMapper == null) {
