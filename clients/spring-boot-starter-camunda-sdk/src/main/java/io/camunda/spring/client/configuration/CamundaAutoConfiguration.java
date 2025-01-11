@@ -52,7 +52,7 @@ public class CamundaAutoConfiguration {
       CamundaSpringProcessTestContext
           .class) // only run if we are not running in a test case - as otherwise the lifecycle
   // is controlled by the test
-  public CamundaLifecycleEventProducer zeebeLifecycleEventProducer(
+  public CamundaLifecycleEventProducer camundaLifecycleEventProducer(
       final CamundaClient client, final ApplicationEventPublisher publisher) {
     return new CamundaLifecycleEventProducer(client, publisher);
   }
