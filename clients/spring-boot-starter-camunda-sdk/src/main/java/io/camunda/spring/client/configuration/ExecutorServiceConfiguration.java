@@ -47,7 +47,7 @@ public class ExecutorServiceConfiguration {
   }
 
   @Bean
-  public CamundaClientExecutorService zeebeClientThreadPool(
+  public CamundaClientExecutorService camundaClientThreadPool(
       @Autowired(required = false) final MeterRegistry meterRegistry) {
     final ScheduledExecutorService threadPool =
         Executors.newScheduledThreadPool(
