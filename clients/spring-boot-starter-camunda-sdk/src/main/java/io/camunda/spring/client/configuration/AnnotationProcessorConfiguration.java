@@ -29,13 +29,13 @@ import org.springframework.context.annotation.Bean;
 public class AnnotationProcessorConfiguration {
 
   @Bean
-  public CamundaAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry(
+  public CamundaAnnotationProcessorRegistry camundaAnnotationProcessorRegistry(
       final List<AbstractCamundaAnnotationProcessor> processors) {
     return new CamundaAnnotationProcessorRegistry(processors);
   }
 
   @Bean
-  public CamundaClientEventListener zeebeClientEventListener(
+  public CamundaClientEventListener camundaClientEventListener(
       final CamundaAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
     return new CamundaClientEventListener(zeebeAnnotationProcessorRegistry);
   }
@@ -47,7 +47,7 @@ public class AnnotationProcessorConfiguration {
   }
 
   @Bean
-  public JobWorkerAnnotationProcessor zeebeWorkerPostProcessor(
+  public JobWorkerAnnotationProcessor jobWorkerPostProcessor(
       final JobWorkerManager jobWorkerManager,
       final List<JobWorkerValueCustomizer> jobWorkerValueCustomizers) {
     return new JobWorkerAnnotationProcessor(jobWorkerManager, jobWorkerValueCustomizers);
