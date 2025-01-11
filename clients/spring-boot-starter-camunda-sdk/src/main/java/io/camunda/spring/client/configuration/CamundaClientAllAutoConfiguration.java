@@ -64,7 +64,7 @@ public class CamundaClientAllAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public CamundaClientExecutorService zeebeClientExecutorService() {
+  public CamundaClientExecutorService camundaClientExecutorService() {
     return CamundaClientExecutorService.createDefault(
         getProperty(
             "NumJobWorkerExecutionThreads",
