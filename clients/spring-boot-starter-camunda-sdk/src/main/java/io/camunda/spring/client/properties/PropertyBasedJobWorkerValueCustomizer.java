@@ -103,7 +103,7 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
 
   private String extractVariableName(final ParameterInfo parameterInfo) {
     // get can be used here as the list is already filtered by readZeebeVariableParameters
-    return getVariableValue(parameterInfo).get().name();
+    return getVariableValue(parameterInfo).get().getName();
   }
 
   private List<String> readVariablesAsTypeParameters(final MethodInfo methodInfo) {
