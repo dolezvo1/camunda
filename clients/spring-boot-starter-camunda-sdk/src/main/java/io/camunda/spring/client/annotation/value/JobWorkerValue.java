@@ -255,7 +255,7 @@ public class JobWorkerValue implements CamundaAnnotationValue<MethodInfo> {
 
   @Override
   public String toString() {
-    return "ZeebeWorkerValue{"
+    return "JobWorkerValue{"
         + "type='"
         + type
         + '\''
