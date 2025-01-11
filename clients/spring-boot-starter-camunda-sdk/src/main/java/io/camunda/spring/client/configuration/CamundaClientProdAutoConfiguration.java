@@ -15,9 +15,15 @@
  */
 package io.camunda.spring.client.configuration;
 
+import static io.camunda.spring.client.configuration.PropertyUtil.getProperty;
+
 import io.camunda.client.CamundaClient;
+import io.camunda.client.CredentialsProvider;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaClientImpl;
+import io.camunda.client.impl.NoopCredentialsProvider;
+import io.camunda.client.impl.oauth.OAuthCredentialsProviderBuilder;
+import io.camunda.client.impl.util.Environment;
 import io.camunda.client.impl.util.ExecutorResource;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
@@ -26,6 +32,9 @@ import io.camunda.spring.client.testsupport.CamundaSpringProcessTestContext;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import org.apache.hc.client5.http.async.AsyncExecChainHandler;
@@ -58,20 +67,123 @@ public class CamundaClientProdAutoConfiguration {
       LoggerFactory.getLogger(CamundaClientProdAutoConfiguration.class);
 
   @Bean
-  public CamundaClientConfigurationImpl zeebeClientConfiguration(
+  @ConditionalOnMissingBean
+  public CredentialsProvider camundaClientCredentialsProvider(
+      final CamundaClientConfigurationProperties properties,
+      final CamundaClientProperties camundaClientProperties) {
+    final OAuthCredentialsProviderBuilder credBuilder =
+        CredentialsProvider.newCredentialsProviderBuilder()
+            .applyEnvironmentOverrides(false)
+            .clientId(
+                getProperty(
+                    "credentialsProvider.clientId",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getClientId(),
+                    () -> properties.getCloud().getClientId(),
+                    () -> Environment.system().get("ZEEBE_CLIENT_ID")))
+            .clientSecret(
+                getProperty(
+                    "credentialsProvider.clientSecret",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getClientSecret(),
+                    () -> properties.getCloud().getClientSecret(),
+                    () -> Environment.system().get("ZEEBE_CLIENT_SECRET")))
+            .audience(
+                getProperty(
+                    "credentialProvider.audience",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getAudience(),
+                    () -> camundaClientProperties.getZeebe().getAudience(),
+                    () -> properties.getCloud().getAudience()))
+            .scope(
+                getProperty(
+                    "credentialsProvider.scope",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getScope(),
+                    () -> camundaClientProperties.getZeebe().getScope(),
+                    () -> properties.getCloud().getScope()))
+            .authorizationServerUrl(
+                getProperty(
+                    "credentialsProvider.authorizationServerUrl",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getIssuer().toString(),
+                    () -> properties.getCloud().getAuthUrl()))
+            .credentialsCachePath(
+                getProperty(
+                    "credentialsProvider.credentialsCachePath",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getCredentialsCachePath(),
+                    () -> properties.getCloud().getCredentialsCachePath()))
+            .connectTimeout(
+                getProperty(
+                    "credentialsProvider.connectTimeout",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getConnectTimeout()))
+            .readTimeout(
+                getProperty(
+                    "credentialsProvider.readTimeout",
+                    null,
+                    null,
+                    () -> camundaClientProperties.getAuth().getReadTimeout()));
+
+    maybeConfigureIdentityProviderSSLConfig(credBuilder, camundaClientProperties);
+    try {
+      final CredentialsProvider credProvider = credBuilder.build();
+      return credProvider;
+    } catch (final Exception e) {
+      LOG.warn("Failed to configure credential provider", e);
+      return new NoopCredentialsProvider();
+    }
+  }
+
+  private void maybeConfigureIdentityProviderSSLConfig(
+      final OAuthCredentialsProviderBuilder builder,
+      final CamundaClientProperties camundaClientProperties) {
+    if (camundaClientProperties.getAuth() == null) {
+      return;
+    }
+    if (camundaClientProperties.getAuth().getKeystorePath() != null) {
+      final Path keyStore = Paths.get(camundaClientProperties.getAuth().getKeystorePath());
+      if (Files.exists(keyStore)) {
+        builder.keystorePath(keyStore);
+        builder.keystorePassword(camundaClientProperties.getAuth().getKeystorePassword());
+        builder.keystoreKeyPassword(camundaClientProperties.getAuth().getKeystoreKeyPassword());
+      }
+    }
+
+    if (camundaClientProperties.getAuth().getTruststorePath() != null) {
+      final Path trustStore = Paths.get(camundaClientProperties.getAuth().getTruststorePath());
+      if (Files.exists(trustStore)) {
+        builder.truststorePath(trustStore);
+        builder.truststorePassword(camundaClientProperties.getAuth().getTruststorePassword());
+      }
+    }
+  }
+
+  @Bean
+  public CamundaClientConfigurationImpl camundaClientConfiguration(
       final CamundaClientConfigurationProperties properties,
       final CamundaClientProperties camundaClientProperties,
       final JsonMapper jsonMapper,
       final List<ClientInterceptor> interceptors,
       final List<AsyncExecChainHandler> chainHandlers,
-      final CamundaClientExecutorService zeebeClientExecutorService) {
+      final CamundaClientExecutorService camundaClientExecutorService,
+      final CredentialsProvider camundaClientCredentialsProvider) {
     return new CamundaClientConfigurationImpl(
         properties,
         camundaClientProperties,
         jsonMapper,
         interceptors,
         chainHandlers,
-        zeebeClientExecutorService) {};
+        camundaClientExecutorService,
+        camundaClientCredentialsProvider) {};
   }
 
   @Bean(destroyMethod = "close")

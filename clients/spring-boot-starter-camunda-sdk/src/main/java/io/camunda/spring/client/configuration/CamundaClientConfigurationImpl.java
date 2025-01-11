@@ -21,9 +21,6 @@ import io.camunda.client.CamundaClientConfiguration;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaClientBuilderImpl;
-import io.camunda.client.impl.NoopCredentialsProvider;
-import io.camunda.client.impl.oauth.OAuthCredentialsProviderBuilder;
-import io.camunda.client.impl.util.Environment;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
@@ -32,9 +29,6 @@ import io.grpc.ClientInterceptor;
 import jakarta.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +51,7 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
   private final List<ClientInterceptor> interceptors;
   private final List<AsyncExecChainHandler> chainHandlers;
   private final CamundaClientExecutorService zeebeClientExecutorService;
+  private final CredentialsProvider credentialsProvider;
 
   @Autowired
   public CamundaClientConfigurationImpl(
@@ -65,13 +60,15 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
       final JsonMapper jsonMapper,
       final List<ClientInterceptor> interceptors,
       final List<AsyncExecChainHandler> chainHandlers,
-      final CamundaClientExecutorService zeebeClientExecutorService) {
+      final CamundaClientExecutorService zeebeClientExecutorService,
+      final CredentialsProvider credentialsProvider) {
     this.properties = properties;
     this.camundaClientProperties = camundaClientProperties;
     this.jsonMapper = jsonMapper;
     this.interceptors = interceptors;
     this.chainHandlers = chainHandlers;
     this.zeebeClientExecutorService = zeebeClientExecutorService;
+    this.credentialsProvider = credentialsProvider;
   }
 
   @PostConstruct
@@ -238,79 +235,7 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
-    if (!configCache.containsKey("credentialsProvider")) {
-      final OAuthCredentialsProviderBuilder credBuilder =
-          CredentialsProvider.newCredentialsProviderBuilder()
-              .applyEnvironmentOverrides(false)
-              .clientId(
-                  getProperty(
-                      "credentialsProvider.clientId",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getClientId(),
-                      () -> properties.getCloud().getClientId(),
-                      () -> Environment.system().get("ZEEBE_CLIENT_ID")))
-              .clientSecret(
-                  getProperty(
-                      "credentialsProvider.clientSecret",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getClientSecret(),
-                      () -> properties.getCloud().getClientSecret(),
-                      () -> Environment.system().get("ZEEBE_CLIENT_SECRET")))
-              .audience(
-                  getProperty(
-                      "credentialProvider.audience",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getAudience(),
-                      () -> camundaClientProperties.getZeebe().getAudience(),
-                      () -> properties.getCloud().getAudience()))
-              .scope(
-                  getProperty(
-                      "credentialsProvider.scope",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getScope(),
-                      () -> camundaClientProperties.getZeebe().getScope(),
-                      () -> properties.getCloud().getScope()))
-              .authorizationServerUrl(
-                  getProperty(
-                      "credentialsProvider.authorizationServerUrl",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getIssuer().toString(),
-                      () -> properties.getCloud().getAuthUrl()))
-              .credentialsCachePath(
-                  getProperty(
-                      "credentialsProvider.credentialsCachePath",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getCredentialsCachePath(),
-                      () -> properties.getCloud().getCredentialsCachePath()))
-              .connectTimeout(
-                  getProperty(
-                      "credentialsProvider.connectTimeout",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getConnectTimeout()))
-              .readTimeout(
-                  getProperty(
-                      "credentialsProvider.readTimeout",
-                      configCache,
-                      null,
-                      () -> camundaClientProperties.getAuth().getReadTimeout()));
-
-      maybeConfigureIdentityProviderSSLConfig(credBuilder);
-      try {
-        final CredentialsProvider credProvider = credBuilder.build();
-        configCache.put("credentialsProvider", credProvider);
-      } catch (final Exception e) {
-        LOG.warn("Failed to configure credential provider", e);
-        configCache.put("credentialsProvider", new NoopCredentialsProvider());
-      }
-    }
-    return (CredentialsProvider) configCache.get("credentialsProvider");
+    return credentialsProvider;
   }
 
   @Override
@@ -405,29 +330,6 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
         DEFAULT.preferRestOverGrpc(),
         camundaClientProperties::getPreferRestOverGrpc,
         () -> camundaClientProperties.getZeebe().isPreferRestOverGrpc());
-  }
-
-  private void maybeConfigureIdentityProviderSSLConfig(
-      final OAuthCredentialsProviderBuilder builder) {
-    if (camundaClientProperties.getAuth() == null) {
-      return;
-    }
-    if (camundaClientProperties.getAuth().getKeystorePath() != null) {
-      final Path keyStore = Paths.get(camundaClientProperties.getAuth().getKeystorePath());
-      if (Files.exists(keyStore)) {
-        builder.keystorePath(keyStore);
-        builder.keystorePassword(camundaClientProperties.getAuth().getKeystorePassword());
-        builder.keystoreKeyPassword(camundaClientProperties.getAuth().getKeystoreKeyPassword());
-      }
-    }
-
-    if (camundaClientProperties.getAuth().getTruststorePath() != null) {
-      final Path trustStore = Paths.get(camundaClientProperties.getAuth().getTruststorePath());
-      if (Files.exists(trustStore)) {
-        builder.truststorePath(trustStore);
-        builder.truststorePassword(camundaClientProperties.getAuth().getTruststorePassword());
-      }
-    }
   }
 
   private String composeGatewayAddress() {
