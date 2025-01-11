@@ -15,4 +15,23 @@
  */
 package io.camunda.spring.client.annotation.value;
 
-public record VariableValue(String name) {}
+import io.camunda.spring.client.bean.ParameterInfo;
+
+public class VariableValue implements CamundaAnnotationValue<ParameterInfo> {
+  private final String name;
+  private final ParameterInfo parameterInfo;
+
+  public VariableValue(final String name, final ParameterInfo parameterInfo) {
+    this.name = name;
+    this.parameterInfo = parameterInfo;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public ParameterInfo getBeanInfo() {
+    return parameterInfo;
+  }
+}
