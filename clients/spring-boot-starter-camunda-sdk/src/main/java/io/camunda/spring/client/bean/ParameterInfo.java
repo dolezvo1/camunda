@@ -17,13 +17,13 @@ package io.camunda.spring.client.bean;
 
 import java.lang.reflect.Parameter;
 
-public class ParameterInfo {
-
+public class ParameterInfo implements BeanInfo {
+  private final MethodInfo methodInfo;
   private final String parameterName;
-
   private final Parameter parameterInfo;
 
-  public ParameterInfo(final Parameter param, final String paramName) {
+  public ParameterInfo(final MethodInfo methodInfo, final Parameter param, final String paramName) {
+    this.methodInfo = methodInfo;
     if (paramName == null) {
       parameterName = param.getName();
     } else {
@@ -48,5 +48,15 @@ public class ParameterInfo {
         + ", parameterInfo="
         + parameterInfo
         + '}';
+  }
+
+  @Override
+  public Object getBean() {
+    return methodInfo.getBean();
+  }
+
+  @Override
+  public String getBeanName() {
+    return methodInfo.getBeanName();
   }
 }
