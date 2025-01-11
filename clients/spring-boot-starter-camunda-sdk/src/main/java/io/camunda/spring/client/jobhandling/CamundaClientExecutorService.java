@@ -31,9 +31,9 @@ public class CamundaClientExecutorService {
   private final boolean ownedByCamundaClient;
 
   public CamundaClientExecutorService(
-      final ScheduledExecutorService scheduledExecutorService, final boolean ownedByZeebeClient) {
+      final ScheduledExecutorService scheduledExecutorService, final boolean ownedByCamundaClient) {
     this.scheduledExecutorService = scheduledExecutorService;
-    ownedByCamundaClient = ownedByZeebeClient;
+    this.ownedByCamundaClient = ownedByCamundaClient;
   }
 
   public boolean isOwnedByCamundaClient() {
