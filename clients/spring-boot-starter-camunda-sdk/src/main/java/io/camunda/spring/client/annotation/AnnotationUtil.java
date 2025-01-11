@@ -140,9 +140,9 @@ public class AnnotationUtil {
   public static Optional<VariableValue> getVariableValue(final ParameterInfo parameterInfo) {
     if (isVariable(parameterInfo)) {
       if (!isVariableLegacy(parameterInfo)) {
-        return Optional.of(new VariableValue(getVariableName(parameterInfo)));
+        return Optional.of(new VariableValue(getVariableName(parameterInfo), parameterInfo));
       } else {
-        return Optional.of(new VariableValue(getVariableNameLegacy(parameterInfo)));
+        return Optional.of(new VariableValue(getVariableNameLegacy(parameterInfo), parameterInfo));
       }
     }
     return Optional.empty();
