@@ -18,6 +18,7 @@ package io.camunda.spring.client.configuration;
 import static io.camunda.spring.client.configuration.PropertyUtil.getProperty;
 
 import io.camunda.client.CamundaClient;
+import io.camunda.client.CamundaClientConfiguration;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaClientImpl;
@@ -168,7 +169,7 @@ public class CamundaClientProdAutoConfiguration {
   }
 
   @Bean
-  public CamundaClientConfigurationImpl camundaClientConfiguration(
+  public CamundaClientConfiguration camundaClientConfiguration(
       final CamundaClientConfigurationProperties properties,
       final CamundaClientProperties camundaClientProperties,
       final JsonMapper jsonMapper,
