@@ -171,7 +171,7 @@ public class AnnotationUtil {
         .getAnnotation(io.camunda.zeebe.spring.client.annotation.Deployment.class)
         .map(io.camunda.zeebe.spring.client.annotation.Deployment::resources)
         .map(Arrays::asList)
-        .orElseGet(ArrayList::new);
+        .orElseGet(List::of);
   }
 
   private static boolean isVariableLegacy(final ParameterInfo parameterInfo) {
