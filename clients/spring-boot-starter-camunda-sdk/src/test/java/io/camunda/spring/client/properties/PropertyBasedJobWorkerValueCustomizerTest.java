@@ -51,9 +51,9 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
     }
   }
 
-  private static CamundaClientConfigurationProperties legacyProperties() {
-    final CamundaClientConfigurationProperties properties =
-        new CamundaClientConfigurationProperties(null);
+  private static ZeebeClientConfigurationProperties legacyProperties() {
+    final ZeebeClientConfigurationProperties properties =
+        new ZeebeClientConfigurationProperties(null);
     properties.applyOverrides();
     return properties;
   }
@@ -79,7 +79,7 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
   @Test
   void shouldNotAdjustVariableFilterVariablesAsActivatedJobIsInjectedLegacy() {
     // given
-    final CamundaClientConfigurationProperties properties = legacyProperties();
+    final ZeebeClientConfigurationProperties properties = legacyProperties();
     final PropertyBasedJobWorkerValueCustomizer customizer =
         new PropertyBasedJobWorkerValueCustomizer(properties, properties());
     final JobWorkerValue jobWorkerValue = new JobWorkerValue();
@@ -108,7 +108,7 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
   @Test
   void shouldSetDefaultNameLegacy() {
     // given
-    final CamundaClientConfigurationProperties properties = legacyProperties();
+    final ZeebeClientConfigurationProperties properties = legacyProperties();
     properties.getWorker().setDefaultName("defaultName");
     final PropertyBasedJobWorkerValueCustomizer customizer =
         new PropertyBasedJobWorkerValueCustomizer(properties, properties());
@@ -167,7 +167,7 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
   @Test
   void shouldSetDefaultTenantIdsLegacy() {
     // given
-    final CamundaClientConfigurationProperties properties = legacyProperties();
+    final ZeebeClientConfigurationProperties properties = legacyProperties();
     properties.setDefaultJobWorkerTenantIds(List.of("customTenantId"));
 
     final PropertyBasedJobWorkerValueCustomizer customizer =
@@ -202,7 +202,7 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
   @Test
   void shouldSetDefaultTypeLegacy() {
     // given
-    final CamundaClientConfigurationProperties properties = legacyProperties();
+    final ZeebeClientConfigurationProperties properties = legacyProperties();
     properties.getWorker().setDefaultType("defaultType");
     final PropertyBasedJobWorkerValueCustomizer customizer =
         new PropertyBasedJobWorkerValueCustomizer(properties, properties());
@@ -313,7 +313,7 @@ public class PropertyBasedJobWorkerValueCustomizerTest {
   @Test
   void shouldApplyOverridesLegacy() {
     // given
-    final CamundaClientConfigurationProperties properties = legacyProperties();
+    final ZeebeClientConfigurationProperties properties = legacyProperties();
     final JobWorkerValue override = new JobWorkerValue();
     override.setEnabled(false);
     properties.getWorker().getOverride().put("sampleWorker", override);

@@ -31,9 +31,9 @@ import io.camunda.spring.client.jobhandling.parameter.ParameterResolverStrategy;
 import io.camunda.spring.client.jobhandling.result.DefaultResultProcessorStrategy;
 import io.camunda.spring.client.jobhandling.result.ResultProcessorStrategy;
 import io.camunda.spring.client.metrics.MetricsRecorder;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.PropertyBasedJobWorkerValueCustomizer;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,16 +47,16 @@ import org.springframework.context.annotation.Import;
     matchIfMissing = true)
 @Import({AnnotationProcessorConfiguration.class, JsonMapperConfiguration.class})
 @EnableConfigurationProperties({
-  CamundaClientConfigurationProperties.class,
+  ZeebeClientConfigurationProperties.class,
   CamundaClientProperties.class
 })
 public class CamundaClientAllAutoConfiguration {
 
-  private final CamundaClientConfigurationProperties configurationProperties;
+  private final ZeebeClientConfigurationProperties configurationProperties;
   private final CamundaClientProperties camundaClientProperties;
 
   public CamundaClientAllAutoConfiguration(
-      final CamundaClientConfigurationProperties configurationProperties,
+      final ZeebeClientConfigurationProperties configurationProperties,
       final CamundaClientProperties camundaClientProperties) {
     this.configurationProperties = configurationProperties;
     this.camundaClientProperties = camundaClientProperties;

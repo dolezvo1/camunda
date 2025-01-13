@@ -43,7 +43,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = JavaClientPropertiesTest.TestConfig.class)
 public class JavaClientPropertiesTest {
 
-  @Autowired private CamundaClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasBrokerContactPoint() {
@@ -80,7 +80,7 @@ public class JavaClientPropertiesTest {
     assertThat(properties.getCloud().getClientSecret()).isEqualTo("processOrchestration");
   }
 
-  @EnableConfigurationProperties(CamundaClientConfigurationProperties.class)
+  @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
     @Bean("jsonMapper")
     @ConditionalOnMissingBean(JsonMapper.class)

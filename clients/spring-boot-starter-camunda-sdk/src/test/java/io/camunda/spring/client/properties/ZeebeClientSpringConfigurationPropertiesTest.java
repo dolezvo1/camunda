@@ -51,7 +51,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
 public class ZeebeClientSpringConfigurationPropertiesTest {
 
-  @Autowired private CamundaClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasDeprecatedGatewayAddress() {
@@ -123,7 +123,7 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
     assertThat(properties.getWorker().getOverride().get("foo").getEnabled()).isFalse();
   }
 
-  @EnableConfigurationProperties(CamundaClientConfigurationProperties.class)
+  @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
     @Bean("jsonMapper")
     @ConditionalOnMissingBean(JsonMapper.class)

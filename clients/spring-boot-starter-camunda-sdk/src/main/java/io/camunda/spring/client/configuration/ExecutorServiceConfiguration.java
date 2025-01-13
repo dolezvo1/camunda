@@ -19,8 +19,8 @@ import static io.camunda.spring.client.configuration.CamundaClientConfigurationI
 import static io.camunda.spring.client.configuration.PropertyUtil.getProperty;
 
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
@@ -36,11 +36,11 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnMissingBean(CamundaClientExecutorService.class)
 public class ExecutorServiceConfiguration {
 
-  private final CamundaClientConfigurationProperties configurationProperties;
+  private final ZeebeClientConfigurationProperties configurationProperties;
   private final CamundaClientProperties camundaClientProperties;
 
   public ExecutorServiceConfiguration(
-      final CamundaClientConfigurationProperties configurationProperties,
+      final ZeebeClientConfigurationProperties configurationProperties,
       final CamundaClientProperties camundaClientProperties) {
     this.configurationProperties = configurationProperties;
     this.camundaClientProperties = camundaClientProperties;

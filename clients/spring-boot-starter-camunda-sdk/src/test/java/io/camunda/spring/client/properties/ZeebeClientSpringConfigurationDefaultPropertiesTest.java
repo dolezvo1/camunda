@@ -30,7 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
     classes = ZeebeClientSpringConfigurationDefaultPropertiesTest.TestConfig.class)
 public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
 
-  @Autowired private CamundaClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasRequestTimeout() {
@@ -72,6 +72,6 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
     assertThat(properties.getCaCertificatePath()).isNull();
   }
 
-  @EnableConfigurationProperties(CamundaClientConfigurationProperties.class)
+  @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {}
 }

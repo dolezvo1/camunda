@@ -15,29 +15,29 @@
  */
 package io.camunda.spring.client.config;
 
-import static io.camunda.spring.client.properties.CamundaClientConfigurationProperties.CONNECTION_MODE_ADDRESS;
-import static io.camunda.spring.client.properties.CamundaClientConfigurationProperties.CONNECTION_MODE_CLOUD;
+import static io.camunda.spring.client.properties.ZeebeClientConfigurationProperties.CONNECTION_MODE_ADDRESS;
+import static io.camunda.spring.client.properties.ZeebeClientConfigurationProperties.CONNECTION_MODE_CLOUD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties.Broker;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties.Cloud;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties.Broker;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties.Cloud;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CamundaClientConfigurationPropertiesTest {
+public class ZeebeClientConfigurationPropertiesTest {
 
   private static final String BROKER_GRPC_ADDRESS =
       "https://cluster-id.cluster-region.base-url:123";
-  private CamundaClientConfigurationProperties properties;
+  private ZeebeClientConfigurationProperties properties;
 
   @BeforeEach
   public void setUp() {
-    properties = new CamundaClientConfigurationProperties(null);
+    properties = new ZeebeClientConfigurationProperties(null);
   }
 
   @Test

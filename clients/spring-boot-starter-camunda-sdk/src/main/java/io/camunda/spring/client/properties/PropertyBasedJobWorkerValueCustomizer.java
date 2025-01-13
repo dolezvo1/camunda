@@ -48,11 +48,11 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
       LoggerFactory.getLogger(PropertyBasedJobWorkerValueCustomizer.class);
   private static final CopyNotNullBeanUtilsBean BEAN_UTILS_BEAN = new CopyNotNullBeanUtilsBean();
 
-  private final CamundaClientConfigurationProperties zeebeClientConfigurationProperties;
+  private final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties;
   private final CamundaClientProperties camundaClientProperties;
 
   public PropertyBasedJobWorkerValueCustomizer(
-      final CamundaClientConfigurationProperties zeebeClientConfigurationProperties,
+      final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties,
       final CamundaClientProperties camundaClientProperties) {
     this.zeebeClientConfigurationProperties = zeebeClientConfigurationProperties;
     this.camundaClientProperties = camundaClientProperties;

@@ -38,14 +38,14 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 @Deprecated(since = "8.6", forRemoval = true)
-public class CamundaClientConfigurationProperties {
+public class ZeebeClientConfigurationProperties {
   // Used to read default config values
   public static final CamundaClientBuilderImpl DEFAULT =
       (CamundaClientBuilderImpl) new CamundaClientBuilderImpl().withProperties(new Properties());
   public static final String CONNECTION_MODE_CLOUD = "CLOUD";
   public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(CamundaClientConfigurationProperties.class);
+      LoggerFactory.getLogger(ZeebeClientConfigurationProperties.class);
   private final org.springframework.core.env.Environment environment;
 
   /**
@@ -83,7 +83,7 @@ public class CamundaClientConfigurationProperties {
   private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
 
   @Autowired
-  public CamundaClientConfigurationProperties(
+  public ZeebeClientConfigurationProperties(
       final org.springframework.core.env.Environment environment) {
     this.environment = environment;
   }
@@ -235,7 +235,7 @@ public class CamundaClientConfigurationProperties {
 
   /**
    * @deprecated since 8.5 for removal with 8.8, replaced by {@link
-   *     CamundaClientConfigurationProperties#getGrpcAddress()}
+   *     ZeebeClientConfigurationProperties#getGrpcAddress()}
    * @see CamundaClientConfiguration#getGatewayAddress()
    */
   @DeprecatedConfigurationProperty(replacement = "camunda.client.grpc-address")
@@ -418,7 +418,7 @@ public class CamundaClientConfigurationProperties {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    final CamundaClientConfigurationProperties that = (CamundaClientConfigurationProperties) o;
+    final ZeebeClientConfigurationProperties that = (ZeebeClientConfigurationProperties) o;
     return Objects.equals(broker, that.broker)
         && Objects.equals(cloud, that.cloud)
         && Objects.equals(worker, that.worker)

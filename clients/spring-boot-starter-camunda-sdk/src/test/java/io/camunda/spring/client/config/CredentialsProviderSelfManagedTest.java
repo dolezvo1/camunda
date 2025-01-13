@@ -28,8 +28,8 @@ import io.camunda.client.impl.oauth.OAuthCredentialsProvider;
 import io.camunda.spring.client.configuration.CamundaClientConfigurationImpl;
 import io.camunda.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -55,7 +55,7 @@ import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
       "camunda.client.auth.client-secret=my-client-secret"
     })
 @EnableConfigurationProperties({
-  CamundaClientConfigurationProperties.class,
+  ZeebeClientConfigurationProperties.class,
   CamundaClientProperties.class
 })
 public class CredentialsProviderSelfManagedTest {

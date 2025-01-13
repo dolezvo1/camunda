@@ -22,9 +22,9 @@ import io.camunda.client.CredentialsProvider;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaClientBuilderImpl;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.PropertiesUtil;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import jakarta.annotation.PostConstruct;
 import java.net.MalformedURLException;
@@ -45,7 +45,7 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
       (CamundaClientBuilderImpl) new CamundaClientBuilderImpl().withProperties(new Properties());
   private static final Logger LOG = LoggerFactory.getLogger(CamundaClientConfigurationImpl.class);
   private final Map<String, Object> configCache = new HashMap<>();
-  private final CamundaClientConfigurationProperties properties;
+  private final ZeebeClientConfigurationProperties properties;
   private final CamundaClientProperties camundaClientProperties;
   private final JsonMapper jsonMapper;
   private final List<ClientInterceptor> interceptors;
@@ -55,7 +55,7 @@ public class CamundaClientConfigurationImpl implements CamundaClientConfiguratio
 
   @Autowired
   public CamundaClientConfigurationImpl(
-      final CamundaClientConfigurationProperties properties,
+      final ZeebeClientConfigurationProperties properties,
       final CamundaClientProperties camundaClientProperties,
       final JsonMapper jsonMapper,
       final List<ClientInterceptor> interceptors,

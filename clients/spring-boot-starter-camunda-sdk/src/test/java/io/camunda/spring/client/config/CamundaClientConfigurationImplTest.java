@@ -23,8 +23,8 @@ import io.camunda.client.impl.CamundaObjectMapper;
 import io.camunda.client.impl.NoopCredentialsProvider;
 import io.camunda.spring.client.configuration.CamundaClientConfigurationImpl;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import java.util.List;
 import org.apache.hc.client5.http.async.AsyncExecChainHandler;
@@ -33,7 +33,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 public class CamundaClientConfigurationImplTest {
   private static CamundaClientConfigurationImpl configuration(
-      final CamundaClientConfigurationProperties legacyProperties,
+      final ZeebeClientConfigurationProperties legacyProperties,
       final CamundaClientProperties properties,
       final JsonMapper jsonMapper,
       final List<ClientInterceptor> interceptors,
@@ -50,8 +50,8 @@ public class CamundaClientConfigurationImplTest {
         credentialsProvider);
   }
 
-  private static CamundaClientConfigurationProperties legacyProperties() {
-    return new CamundaClientConfigurationProperties(new MockEnvironment());
+  private static ZeebeClientConfigurationProperties legacyProperties() {
+    return new ZeebeClientConfigurationProperties(new MockEnvironment());
   }
 
   private static CamundaClientProperties properties() {

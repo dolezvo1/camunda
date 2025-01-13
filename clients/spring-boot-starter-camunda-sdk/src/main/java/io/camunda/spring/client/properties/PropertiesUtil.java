@@ -15,7 +15,7 @@
  */
 package io.camunda.spring.client.properties;
 
-import static io.camunda.spring.client.properties.CamundaClientConfigurationProperties.*;
+import static io.camunda.spring.client.properties.ZeebeClientConfigurationProperties.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
 public class PropertiesUtil {
   private static final Logger LOG = LoggerFactory.getLogger(PropertiesUtil.class);
 
-  public static String getZeebeGatewayAddress(
-      final CamundaClientConfigurationProperties properties) {
+  public static String getZeebeGatewayAddress(final ZeebeClientConfigurationProperties properties) {
     final String connectionMode = properties.getConnectionMode();
     if (connectionMode != null && !connectionMode.isEmpty()) {
       LOG.info("Using connection mode '{}' to connect to Zeebe", connectionMode);

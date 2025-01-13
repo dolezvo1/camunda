@@ -27,8 +27,8 @@ import io.camunda.client.impl.oauth.OAuthCredentialsProviderBuilder;
 import io.camunda.client.impl.util.Environment;
 import io.camunda.client.impl.util.ExecutorResource;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
-import io.camunda.spring.client.properties.CamundaClientConfigurationProperties;
 import io.camunda.spring.client.properties.CamundaClientProperties;
+import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.spring.client.testsupport.CamundaSpringProcessTestContext;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.grpc.ClientInterceptor;
@@ -70,7 +70,7 @@ public class CamundaClientProdAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public CredentialsProvider camundaClientCredentialsProvider(
-      final CamundaClientConfigurationProperties properties,
+      final ZeebeClientConfigurationProperties properties,
       final CamundaClientProperties camundaClientProperties) {
     final OAuthCredentialsProviderBuilder credBuilder =
         CredentialsProvider.newCredentialsProviderBuilder()
@@ -170,7 +170,7 @@ public class CamundaClientProdAutoConfiguration {
 
   @Bean
   public CamundaClientConfiguration camundaClientConfiguration(
-      final CamundaClientConfigurationProperties properties,
+      final ZeebeClientConfigurationProperties properties,
       final CamundaClientProperties camundaClientProperties,
       final JsonMapper jsonMapper,
       final List<ClientInterceptor> interceptors,
