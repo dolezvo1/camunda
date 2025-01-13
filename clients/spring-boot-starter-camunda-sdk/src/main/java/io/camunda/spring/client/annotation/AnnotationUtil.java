@@ -163,7 +163,7 @@ public class AnnotationUtil {
         .getAnnotation(Deployment.class)
         .map(Deployment::resources)
         .map(Arrays::asList)
-        .orElseGet(ArrayList::new);
+        .orElseGet(List::of);
   }
 
   private static List<String> getDeploymentResourcesLegacy(final ClassInfo beanInfo) {
