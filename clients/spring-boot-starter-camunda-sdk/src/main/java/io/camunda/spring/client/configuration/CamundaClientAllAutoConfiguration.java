@@ -67,7 +67,8 @@ public class CamundaClientAllAutoConfiguration {
   public CamundaClientExecutorService camundaClientExecutorService() {
     return CamundaClientExecutorService.createDefault(
         getProperty(
-            "NumJobWorkerExecutionThreads",
+            "camunda.client.execution-threads",
+            false,
             null,
             DEFAULT.getNumJobWorkerExecutionThreads(),
             camundaClientProperties::getExecutionThreads,

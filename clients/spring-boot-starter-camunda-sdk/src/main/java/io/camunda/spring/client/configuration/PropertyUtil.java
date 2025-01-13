@@ -37,6 +37,7 @@ public class PropertyUtil {
   @SafeVarargs
   public static <T> T getProperty(
       final String propertyName,
+      final boolean isSecret,
       final Map<String, Object> configCache,
       final T defaultProperty,
       final Supplier<T>... propertySuppliers) {
@@ -44,7 +45,9 @@ public class PropertyUtil {
     if (configCache != null && configCache.containsKey(propertyName)) {
       final Object propertyValue = configCache.get(propertyName);
       LOG.debug(
-          "Property {} loading from cache. Property is set to {}", propertyName, propertyValue);
+          "Property {} loading from cache. Property is set to {}",
+          propertyName,
+          isSecret ? "***" : propertyValue);
       return (T) propertyValue;
     }
     T property = null;
@@ -60,7 +63,7 @@ public class PropertyUtil {
     if (configCache != null) {
       configCache.put(propertyName, property);
     }
-    LOG.debug("Property {} set to {}", propertyName, property);
+    LOG.debug("Property {} set to {}", propertyName, isSecret ? "***" : property);
     return property;
   }
 

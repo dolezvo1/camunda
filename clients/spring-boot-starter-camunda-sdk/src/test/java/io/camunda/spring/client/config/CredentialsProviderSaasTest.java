@@ -26,8 +26,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.impl.oauth.OAuthCredentialsProvider;
-import io.camunda.spring.client.configuration.CamundaClientConfigurationImpl;
-import io.camunda.spring.client.configuration.JsonMapperConfiguration;
+import io.camunda.spring.client.configuration.CamundaClientProdAutoConfiguration;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
@@ -47,7 +46,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
-    classes = {JsonMapperConfiguration.class, CamundaClientConfigurationImpl.class},
+    classes = {CamundaClientProdAutoConfiguration.class},
     properties = {
       "camunda.client.mode=saas",
       "camunda.client.cluster-id=12345",
@@ -67,7 +66,7 @@ public class CredentialsProviderSaasTest {
 
   private static final String ACCESS_TOKEN = "access-token";
   @MockBean CamundaClientExecutorService zeebeClientExecutorService;
-  @Autowired CamundaClientConfigurationImpl configuration;
+  @Autowired CredentialsProvider credentialsProvider;
 
   @DynamicPropertySource
   static void registerPgProperties(final DynamicPropertyRegistry registry) {
@@ -86,13 +85,11 @@ public class CredentialsProviderSaasTest {
 
   @Test
   void shouldBeSaas() {
-    final CredentialsProvider credentialsProvider = configuration.getCredentialsProvider();
     assertThat(credentialsProvider).isExactlyInstanceOf(OAuthCredentialsProvider.class);
   }
 
   @Test
   void shouldHaveZeebeAuth() throws IOException {
-    final CredentialsProvider credentialsProvider = configuration.getCredentialsProvider();
     final Map<String, String> headers = new HashMap<>();
 
     final String accessToken = ACCESS_TOKEN;

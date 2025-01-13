@@ -36,13 +36,13 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnMissingBean(CamundaClientExecutorService.class)
 public class ExecutorServiceConfiguration {
 
-  private final ZeebeClientConfigurationProperties configurationProperties;
+  private final ZeebeClientConfigurationProperties zeebeClientLegacyProperties;
   private final CamundaClientProperties camundaClientProperties;
 
   public ExecutorServiceConfiguration(
-      final ZeebeClientConfigurationProperties configurationProperties,
+      final ZeebeClientConfigurationProperties zeebeClientLegacyProperties,
       final CamundaClientProperties camundaClientProperties) {
-    this.configurationProperties = configurationProperties;
+    this.zeebeClientLegacyProperties = zeebeClientLegacyProperties;
     this.camundaClientProperties = camundaClientProperties;
   }
 
@@ -52,12 +52,13 @@ public class ExecutorServiceConfiguration {
     final ScheduledExecutorService threadPool =
         Executors.newScheduledThreadPool(
             getProperty(
-                "NumJobWorkerExecutionThreads",
+                "camunda.client.execution-threads",
+                false,
                 null,
                 DEFAULT.getNumJobWorkerExecutionThreads(),
                 camundaClientProperties::getExecutionThreads,
                 () -> camundaClientProperties.getZeebe().getExecutionThreads(),
-                configurationProperties::getNumJobWorkerExecutionThreads));
+                zeebeClientLegacyProperties::getNumJobWorkerExecutionThreads));
     if (meterRegistry != null) {
       final MeterBinder threadPoolMetrics =
           new ExecutorServiceMetrics(

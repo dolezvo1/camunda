@@ -172,7 +172,8 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
   private void applyDefaultWorkerName(final JobWorkerValue zeebeWorker) {
     final String defaultJobWorkerName =
         getProperty(
-            "DefaultJobWorkerName",
+            "camunda.client.defaults.name",
+            false,
             null,
             null,
             () -> camundaClientProperties.getDefaults().getName(),
@@ -200,7 +201,8 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
   private void applyDefaultJobWorkerType(final JobWorkerValue zeebeWorker) {
     final String defaultJobWorkerType =
         getProperty(
-            "DefaultJobWorkerType",
+            "camunda.client.defaults.type",
+            false,
             null,
             null,
             () -> camundaClientProperties.getDefaults().getType(),
@@ -225,7 +227,8 @@ public class PropertyBasedJobWorkerValueCustomizer implements JobWorkerValueCust
   private void applyDefaultJobWorkerTenantIds(final JobWorkerValue zeebeWorker) {
     final List<String> defaultJobWorkerTenantIds =
         getProperty(
-            "DefaultJobWorkerTenantIds",
+            "camunda.client.defaults.tenant-ids",
+            false,
             null,
             null,
             () -> camundaClientProperties.getDefaults().getTenantIds(),

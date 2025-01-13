@@ -25,8 +25,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.impl.oauth.OAuthCredentialsProvider;
-import io.camunda.spring.client.configuration.CamundaClientConfigurationImpl;
-import io.camunda.spring.client.configuration.JsonMapperConfiguration;
+import io.camunda.spring.client.configuration.CamundaClientProdAutoConfiguration;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
@@ -48,7 +47,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
-    classes = {JsonMapperConfiguration.class, CamundaClientConfigurationImpl.class},
+    classes = {CamundaClientProdAutoConfiguration.class},
     properties = {
       "camunda.client.mode=self-managed",
       "camunda.client.auth.client-id=my-client-id",
@@ -67,7 +66,7 @@ public class CredentialsProviderSelfManagedTest {
   private static final String ACCESS_TOKEN =
       JWT.create().withExpiresAt(Instant.now().plusSeconds(300)).sign(Algorithm.none());
   @MockBean CamundaClientExecutorService zeebeClientExecutorService;
-  @Autowired CamundaClientConfigurationImpl configuration;
+  @Autowired CredentialsProvider credentialsProvider;
 
   @DynamicPropertySource
   static void registerPgProperties(final DynamicPropertyRegistry registry) {
@@ -86,14 +85,12 @@ public class CredentialsProviderSelfManagedTest {
 
   @Test
   void shouldBeSelfManaged() {
-    final CredentialsProvider credentialsProvider = configuration.getCredentialsProvider();
     assertThat(credentialsProvider).isExactlyInstanceOf(OAuthCredentialsProvider.class);
   }
 
   @Test
   @Disabled
   void shouldHaveZeebeAuth() throws IOException {
-    final CredentialsProvider credentialsProvider = configuration.getCredentialsProvider();
     final Map<String, String> headers = new HashMap<>();
 
     wm.stubFor(

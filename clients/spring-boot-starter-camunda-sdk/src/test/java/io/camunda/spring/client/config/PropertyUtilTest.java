@@ -25,21 +25,23 @@ public class PropertyUtilTest {
   @Test
   void shouldNotPreferLegacy() {
     final String property =
-        PropertyUtil.getProperty("Test", new HashMap<>(), "default", () -> "prop", () -> "legacy");
+        PropertyUtil.getProperty(
+            "Test", false, new HashMap<>(), "default", () -> "prop", () -> "legacy");
     assertThat(property).isEqualTo("prop");
   }
 
   @Test
   void shouldApplyDefault() {
     final String property =
-        PropertyUtil.getProperty("Test", new HashMap<>(), "default", () -> null, () -> null);
+        PropertyUtil.getProperty("Test", false, new HashMap<>(), "default", () -> null, () -> null);
     assertThat(property).isEqualTo("default");
   }
 
   @Test
   void shouldIgnoreDefaultOnLegacy() {
     final String property =
-        PropertyUtil.getProperty("Test", new HashMap<>(), "default", () -> "prop", () -> "default");
+        PropertyUtil.getProperty(
+            "Test", false, new HashMap<>(), "default", () -> "prop", () -> "default");
     assertThat(property).isEqualTo("prop");
   }
 
@@ -48,6 +50,7 @@ public class PropertyUtilTest {
     final String property =
         PropertyUtil.getProperty(
             "Test",
+            false,
             new HashMap<>(),
             "default",
             () -> {
@@ -62,6 +65,7 @@ public class PropertyUtilTest {
     final String property =
         PropertyUtil.getProperty(
             "Test",
+            false,
             new HashMap<>(),
             "default",
             () -> null,
