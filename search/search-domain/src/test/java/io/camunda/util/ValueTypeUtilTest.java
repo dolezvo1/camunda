@@ -20,6 +20,11 @@ public class ValueTypeUtilTest {
   }
 
   @Test
+  public void shouldReturnNullForStringNullValue() {
+    assertEquals(ValueTypeEnum.NULL, ValueTypeUtil.getValueType("null"));
+  }
+
+  @Test
   public void shouldReturnStringForNonNumericString() {
     assertEquals(ValueTypeEnum.STRING, ValueTypeUtil.getValueType("non-numeric"));
   }
@@ -30,8 +35,18 @@ public class ValueTypeUtilTest {
   }
 
   @Test
+  public void shouldReturnStringForIntegerStringWithQuotes() {
+    assertEquals(ValueTypeEnum.STRING, ValueTypeUtil.getValueType("\"123456\""));
+  }
+
+  @Test
   public void shouldReturnDoubleForDoubleString() {
     assertEquals(ValueTypeEnum.DOUBLE, ValueTypeUtil.getValueType("123.456"));
+  }
+
+  @Test
+  public void shouldReturnStringForDoubleStringWithQuotes() {
+    assertEquals(ValueTypeEnum.STRING, ValueTypeUtil.getValueType("\"123.456\""));
   }
 
   @Test
@@ -47,6 +62,16 @@ public class ValueTypeUtilTest {
   @Test
   public void shouldReturnBooleanForBooleanValue() {
     assertEquals(ValueTypeEnum.BOOLEAN, ValueTypeUtil.getValueType(true));
+  }
+
+  @Test
+  public void shouldReturnBooleanForBooleanStringValue() {
+    assertEquals(ValueTypeEnum.BOOLEAN, ValueTypeUtil.getValueType("true"));
+  }
+
+  @Test
+  public void shouldReturnStringForBooleanStringValueWithQuotes() {
+    assertEquals(ValueTypeEnum.STRING, ValueTypeUtil.getValueType("\"true\""));
   }
 
   @Test
