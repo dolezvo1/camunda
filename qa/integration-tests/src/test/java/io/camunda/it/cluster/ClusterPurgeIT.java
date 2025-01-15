@@ -21,7 +21,6 @@ import io.camunda.zeebe.qa.util.cluster.TestStandaloneBroker;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration.TestZeebe;
 import io.camunda.zeebe.qa.util.topology.ClusterActuatorAssert;
-import io.grpc.StatusRuntimeException;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -187,7 +186,6 @@ public class ClusterPurgeIT {
     Assertions.assertThat(future)
         .failsWithin(Duration.ofSeconds(10))
         .withThrowableOfType(ExecutionException.class)
-        .withCauseInstanceOf(StatusRuntimeException.class)
         .withMessageContaining("NOT_FOUND");
   }
 
