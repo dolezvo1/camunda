@@ -21,6 +21,7 @@ import io.camunda.zeebe.qa.util.cluster.TestStandaloneBroker;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration.TestZeebe;
 import io.camunda.zeebe.qa.util.topology.ClusterActuatorAssert;
+import io.grpc.StatusRuntimeException;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -93,12 +94,15 @@ public class ClusterPurgeIT {
     final var processDefinitionKey = deployProcessModel(processModel);
     final var processInstanceKey = startProcess(processDefinitionKey);
 
-    // TODO
-    final var activateJobs =
-        client.newActivateJobsCommand().jobType("test").maxJobsToActivate(1).send().join();
-    activateJobs.getJobs().getFirst().getKey();
-
-    //    final var result = client.newUserTaskQuery().send().join();
+    final var activeJob =
+        client
+            .newActivateJobsCommand()
+            .jobType("test")
+            .maxJobsToActivate(1)
+            .send()
+            .join()
+            .getJobs()
+            .getFirst();
 
     final var actuator = ClusterActuator.of(cluster.availableGateway());
 
@@ -108,8 +112,7 @@ public class ClusterPurgeIT {
     // THEN
     assertThatChangesAreApplied(planChangeResponse);
 
-    // TODO Should fail
-    client.newCompleteCommand(activateJobs.getJobs().getFirst());
+    assertThatJobNotFound(client.newCompleteCommand(activeJob).send());
   }
 
   @Test
@@ -177,6 +180,14 @@ public class ClusterPurgeIT {
         .failsWithin(Duration.ofSeconds(10))
         .withThrowableOfType(ExecutionException.class)
         .withCauseInstanceOf(ProblemException.class)
+        .withMessageContaining("NOT_FOUND");
+  }
+
+  private void assertThatJobNotFound(final Future<?> future) {
+    Assertions.assertThat(future)
+        .failsWithin(Duration.ofSeconds(10))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseInstanceOf(StatusRuntimeException.class)
         .withMessageContaining("NOT_FOUND");
   }
 
