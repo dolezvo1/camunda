@@ -33,6 +33,7 @@
       <column name="PROCESS_DEFINITION_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
       <column name="PROCESS_DEFINITION_ID" type="VARCHAR(200)" />
       <column name="NAME" type="VARCHAR(200)" />
       <column name="RESOURCE_NAME" type="VARCHAR(4000)" />
@@ -53,6 +54,7 @@
       <column name="PROCESS_INSTANCE_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
       <column name="PROCESS_DEFINITION_ID" type="VARCHAR(200)" />
       <column name="PROCESS_DEFINITION_KEY" type="BIGINT" />
       <column name="STATE" type="VARCHAR(20)" />
@@ -77,6 +79,8 @@
       <column name="VAR_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
+      <column name="LEGACY_PI_ID" type="VARCHAR(200)" />
       <column name="PROCESS_INSTANCE_KEY" type="BIGINT" />
       <column name="PROCESS_DEFINITION_ID" type="VARCHAR(255)" />
       <column name="SCOPE_KEY" type="BIGINT" />
@@ -104,6 +108,8 @@
       <column name="FLOW_NODE_INSTANCE_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
+      <column name="LEGACY_PI_ID" type="VARCHAR(200)" />
       <column name="FLOW_NODE_ID" type="VARCHAR(400)" />
       <column name="PROCESS_INSTANCE_KEY" type="BIGINT" />
       <column name="PROCESS_DEFINITION_ID" type="VARCHAR(200)" />
@@ -129,6 +135,8 @@
       <column name="USER_TASK_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
+      <column name="LEGACY_PI_ID" type="VARCHAR(200)" />
       <column name="ELEMENT_ID" type="VARCHAR(200)"/>
       <column name="PROCESS_DEFINITION_ID" type="VARCHAR(200)"/>
       <column name="CREATION_DATE" type="TIMESTAMP WITH TIME ZONE(3)"/>
@@ -180,6 +188,8 @@
       <column name="INCIDENT_KEY" type="BIGINT">
         <constraints primaryKey="true"/>
       </column>
+      <column name="LEGACY_ID" type="VARCHAR(200)" />
+      <column name="LEGACY_PI_ID" type="VARCHAR(200)" />
       <column name="FLOW_NODE_INSTANCE_KEY" type="BIGINT" />
       <column name="FLOW_NODE_ID" type="VARCHAR(400)" />
       <column name="PROCESS_INSTANCE_KEY" type="BIGINT" />
