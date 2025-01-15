@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -31,7 +30,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("auth-oidc")
+@ConditionalOnAuthenticationMethod.OIDC
 public class CamundaOidcUserService extends OidcUserService {
   private static final Logger LOG = LoggerFactory.getLogger(CamundaOidcUserService.class);
   private final MappingServices mappingServices;

@@ -11,6 +11,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 import com.google.common.collect.Sets;
 import io.camunda.authentication.CamundaUserDetailsService;
+import io.camunda.authentication.ConditionalOnAuthenticationMethod;
 import io.camunda.authentication.filters.TenantRequestAttributeFilter;
 import io.camunda.authentication.handler.AuthFailureHandler;
 import io.camunda.authentication.handler.CustomMethodSecurityExpressionHandler;
@@ -52,7 +53,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@Profile("auth-basic|auth-oidc")
+@Profile("consolidated-auth")
 public class WebSecurityConfig {
   public static final String SESSION_COOKIE = "camunda-session";
 
@@ -92,7 +93,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  @Profile("auth-basic")
+  @ConditionalOnAuthenticationMethod.BASIC
   public CamundaUserDetailsService camundaUserDetailsService(
       final UserServices userServices,
       final AuthorizationServices authorizationServices,
@@ -104,7 +105,7 @@ public class WebSecurityConfig {
 
   @Bean
   @Primary
-  @Profile("auth-oidc")
+  @ConditionalOnAuthenticationMethod.OIDC
   public SecurityFilterChain oidcHttpSecurity(
       final HttpSecurity httpSecurity,
       final AuthFailureHandler authFailureHandler,
@@ -139,7 +140,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  @Profile("auth-basic")
+  @ConditionalOnAuthenticationMethod.BASIC
   @Order(1)
   public SecurityFilterChain httpBasicAuthSecurityFilterChain(
       final HttpSecurity httpSecurity,
@@ -167,7 +168,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  @Profile("auth-basic")
+  @ConditionalOnAuthenticationMethod.BASIC
   @Order(2)
   public SecurityFilterChain unprotectedApiAccessSecurityFilterChain(
       final HttpSecurity httpSecurity,
@@ -178,7 +179,8 @@ public class WebSecurityConfig {
       return null;
     }
     LOG.warn(
-        "The API is accessible without authentication. Please disable camunda.security.authentication.basic.allow-unauthenticated-api-access for any deployment.");
+        "The API is accessible without authentication. Please disable {} for any deployment.",
+        AuthenticationProperties.API_UNPROTECTED);
     return baseHttpSecurity(
             withSecurityMatcher(
                 httpSecurity, request -> isApiRequest(request) && !hasSessionCookie(request)),
@@ -188,7 +190,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  @Profile("auth-basic")
+  @ConditionalOnAuthenticationMethod.BASIC
   @Order(3)
   public SecurityFilterChain loginAuthSecurityFilterChain(
       final HttpSecurity httpSecurity, final AuthFailureHandler authFailureHandler)
