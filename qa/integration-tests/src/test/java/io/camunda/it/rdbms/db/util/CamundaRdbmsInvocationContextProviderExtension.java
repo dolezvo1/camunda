@@ -56,8 +56,7 @@ public class CamundaRdbmsInvocationContextProviderExtension
               .withDatabaseContainer(
                   new OracleContainer("gvenzl/oracle-free:latest")
                       .withUsername("camunda")
-                      .withPassword("camunda"))
-      );
+                      .withPassword("camunda")));
 
   private final Set<String> useTestApplications;
 

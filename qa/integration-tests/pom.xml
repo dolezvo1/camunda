@@ -314,8 +314,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
-      <artifactId>ojdbc11</artifactId>
-      <version>23.6.0.24.10</version>
+      <artifactId>ojdbc8</artifactId>
       <scope>test</scope>
     </dependency>
 
