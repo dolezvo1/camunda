@@ -20,20 +20,20 @@ import org.springframework.context.event.EventListener;
 
 public class CamundaClientEventListener {
 
-  private final CamundaAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry;
+  private final CamundaAnnotationProcessorRegistry camundaAnnotationProcessorRegistry;
 
   public CamundaClientEventListener(
-      final CamundaAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
-    this.zeebeAnnotationProcessorRegistry = zeebeAnnotationProcessorRegistry;
+      final CamundaAnnotationProcessorRegistry camundaAnnotationProcessorRegistry) {
+    this.camundaAnnotationProcessorRegistry = camundaAnnotationProcessorRegistry;
   }
 
   @EventListener
   public void handleStart(final CamundaClientCreatedEvent evt) {
-    zeebeAnnotationProcessorRegistry.startAll(evt.getClient());
+    camundaAnnotationProcessorRegistry.startAll(evt.getClient());
   }
 
   @EventListener
   public void handleStop(final CamundaClientClosingEvent evt) {
-    zeebeAnnotationProcessorRegistry.stopAll(evt.getClient());
+    camundaAnnotationProcessorRegistry.stopAll(evt.getClient());
   }
 }
