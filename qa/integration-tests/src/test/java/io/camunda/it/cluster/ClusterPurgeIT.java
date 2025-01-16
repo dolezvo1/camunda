@@ -11,6 +11,7 @@ import io.camunda.client.CamundaClient;
 import io.camunda.client.api.command.ProblemException;
 import io.camunda.client.api.search.response.SearchQueryResponse;
 import io.camunda.client.api.search.response.UserTask;
+import io.camunda.client.protocol.rest.ProblemDetail;
 import io.camunda.zeebe.management.cluster.PlannedOperationsResponse;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
@@ -21,20 +22,30 @@ import io.camunda.zeebe.qa.util.cluster.TestStandaloneBroker;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration;
 import io.camunda.zeebe.qa.util.junit.ZeebeIntegration.TestZeebe;
 import io.camunda.zeebe.qa.util.topology.ClusterActuatorAssert;
+import io.camunda.zeebe.test.util.asserts.TopologyAssert;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.Test;
 
+/** TODO: We currently only test RDBMS because purge is not implemented in the others (yet). */
 @ZeebeIntegration
 public class ClusterPurgeIT {
+
+  private static final int BROKER_COUNT = 1;
+  private static final int PARTITION_COUNT = 1;
+  private static final int REPLICATION_FACTOR = 1;
+
   @TestZeebe
   final TestCluster cluster =
       TestCluster.builder()
-          .withBrokersCount(1)
+          .withBrokersCount(BROKER_COUNT)
+          .withPartitionsCount(PARTITION_COUNT)
+          .withReplicationFactor(REPLICATION_FACTOR)
           .withEmbeddedGateway(true)
           .withBrokerConfig(TestStandaloneBroker::withRdbmsExporter)
           .build();
@@ -55,16 +66,23 @@ public class ClusterPurgeIT {
 
     // THEN
     assertThatChangesAreApplied(planChangeResponse);
-
+    final Future<?> newInstanceFuture =
+        client.newCreateInstanceCommand().processDefinitionKey(processDefinitionKey).send();
+    Assertions.assertThat(newInstanceFuture).failsWithin(Duration.ofSeconds(10));
     assertThatEntityNotFound(client.newProcessDefinitionGetRequest(processDefinitionKey).send());
   }
 
   @Test
   void shouldPurgeProcessInstances() {
     // GIVEN
-    client = cluster.newClientBuilder().build();
+    client = cluster.newClientBuilder().preferRestOverGrpc(true).build();
     final var processModel =
-        Bpmn.createExecutableProcess("test-process").startEvent().endEvent().done();
+        Bpmn.createExecutableProcess("test-process")
+            .startEvent()
+            .serviceTask("service-task-1")
+            .zeebeJobType("test")
+            .endEvent()
+            .done();
     final var processDefinitionKey = deployProcessModel(processModel);
     final var processInstanceKey = startProcess(processDefinitionKey);
 
@@ -75,14 +93,14 @@ public class ClusterPurgeIT {
 
     // THEN
     assertThatChangesAreApplied(planChangeResponse);
-
+    assertThatEntityNotFound(client.newCancelInstanceCommand(processInstanceKey).send());
     assertThatEntityNotFound(client.newProcessInstanceGetRequest(processInstanceKey).send());
   }
 
   @Test
   void shouldPurgeServiceTask() {
     // GIVEN
-    client = cluster.newClientBuilder().build();
+    client = cluster.newClientBuilder().preferRestOverGrpc(true).build();
     final var processModel =
         Bpmn.createExecutableProcess("test-process")
             .startEvent()
@@ -110,8 +128,7 @@ public class ClusterPurgeIT {
 
     // THEN
     assertThatChangesAreApplied(planChangeResponse);
-
-    assertThatJobNotFound(client.newCompleteCommand(activeJob).send());
+    assertThatEntityNotFound(client.newCompleteCommand(activeJob).send());
   }
 
   @Test
@@ -155,50 +172,6 @@ public class ClusterPurgeIT {
         .satisfies(items -> Assertions.assertThat(items).isEmpty());
   }
 
-  private long startProcess(final long processDefinitionKey) {
-    final var processInstanceKey =
-        client
-            .newCreateInstanceCommand()
-            .processDefinitionKey(processDefinitionKey)
-            .send()
-            .join()
-            .getProcessInstanceKey();
-    Awaitility.await("until process instance is created")
-        .atMost(Duration.ofSeconds(20))
-        .untilAsserted(
-            () -> {
-              final Future<?> futureRequest =
-                  client.newProcessInstanceGetRequest(processInstanceKey).send();
-              Assertions.assertThat(futureRequest).succeedsWithin(Duration.ofSeconds(10));
-            });
-    return processInstanceKey;
-  }
-
-  private void assertThatEntityNotFound(final Future<?> future) {
-    Assertions.assertThat(future)
-        .failsWithin(Duration.ofSeconds(10))
-        .withThrowableOfType(ExecutionException.class)
-        .withCauseInstanceOf(ProblemException.class)
-        .withMessageContaining("NOT_FOUND");
-  }
-
-  private void assertThatJobNotFound(final Future<?> future) {
-    Assertions.assertThat(future)
-        .failsWithin(Duration.ofSeconds(10))
-        .withThrowableOfType(ExecutionException.class)
-        .withMessageContaining("NOT_FOUND");
-  }
-
-  private void assertThatChangesAreApplied(final PlannedOperationsResponse planChangeResponse) {
-    Assertions.assertThat(planChangeResponse.getPlannedChanges()).isNotEmpty();
-
-    Awaitility.await("until cluster purge completes")
-        .untilAsserted(
-            () -> {
-              ClusterActuatorAssert.assertThat(cluster).hasCompletedChanges(planChangeResponse);
-            });
-  }
-
   /**
    * Deploys a process model and waits until it is accessible via the API.
    *
@@ -222,5 +195,50 @@ public class ClusterPurgeIT {
               Assertions.assertThat(futureRequest).succeedsWithin(Duration.ofSeconds(10));
             });
     return processDefinitionKey;
+  }
+
+  private long startProcess(final long processDefinitionKey) {
+    final var processInstanceKey =
+        client
+            .newCreateInstanceCommand()
+            .processDefinitionKey(processDefinitionKey)
+            .send()
+            .join()
+            .getProcessInstanceKey();
+    Awaitility.await("until process instance is created")
+        .atMost(Duration.ofSeconds(20))
+        .untilAsserted(
+            () -> {
+              final Future<?> futureRequest =
+                  client.newProcessInstanceGetRequest(processInstanceKey).send();
+              Assertions.assertThat(futureRequest).succeedsWithin(Duration.ofSeconds(10));
+            });
+    return processInstanceKey;
+  }
+
+  private void assertThatEntityNotFound(final Future<?> future) {
+    Assertions.assertThat(future)
+        .failsWithin(Duration.ofSeconds(10))
+        .withThrowableOfType(ExecutionException.class)
+        .extracting(Throwable::getCause)
+        .asInstanceOf(InstanceOfAssertFactories.type(ProblemException.class))
+        .extracting(ProblemException::details)
+        .asInstanceOf(InstanceOfAssertFactories.type(ProblemDetail.class))
+        .extracting(ProblemDetail::getStatus)
+        .isEqualTo(404);
+  }
+
+  private void assertThatChangesAreApplied(final PlannedOperationsResponse planChangeResponse) {
+    Awaitility.await("until cluster purge completes")
+        .untilAsserted(
+            () ->
+                ClusterActuatorAssert.assertThat(cluster).hasCompletedChanges(planChangeResponse));
+    Awaitility.await("until cluster is healthy and ready")
+        .untilAsserted(
+            () ->
+                TopologyAssert.assertThat(client.newTopologyRequest().send().join())
+                    .isComplete(BROKER_COUNT, PARTITION_COUNT, REPLICATION_FACTOR));
+
+    Assertions.assertThat(planChangeResponse.getPlannedChanges()).isNotEmpty();
   }
 }
