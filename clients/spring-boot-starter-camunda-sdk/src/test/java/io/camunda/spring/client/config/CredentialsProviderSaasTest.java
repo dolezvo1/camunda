@@ -26,7 +26,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.impl.oauth.OAuthCredentialsProvider;
-import io.camunda.spring.client.configuration.CamundaClientProdAutoConfiguration;
+import io.camunda.spring.client.configuration.CredentialsProviderConfiguration;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
@@ -46,7 +46,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
-    classes = {CamundaClientProdAutoConfiguration.class},
+    classes = {CredentialsProviderConfiguration.class},
     properties = {
       "camunda.client.mode=saas",
       "camunda.client.cluster-id=12345",

@@ -15,27 +15,20 @@
  */
 package io.camunda.spring.client.configuration;
 
-import static io.camunda.spring.client.configuration.PropertyUtil.getProperty;
-
 import io.camunda.client.CamundaClient;
 import io.camunda.client.CamundaClientConfiguration;
 import io.camunda.client.CredentialsProvider;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaClientImpl;
-import io.camunda.client.impl.NoopCredentialsProvider;
-import io.camunda.client.impl.oauth.OAuthCredentialsProviderBuilder;
-import io.camunda.client.impl.util.Environment;
 import io.camunda.client.impl.util.ExecutorResource;
 import io.camunda.spring.client.jobhandling.CamundaClientExecutorService;
 import io.camunda.spring.client.properties.CamundaClientProperties;
 import io.camunda.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.spring.client.testsupport.CamundaSpringProcessTestContext;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import org.apache.hc.client5.http.async.AsyncExecChainHandler;
@@ -60,126 +53,14 @@ import org.springframework.context.annotation.Bean;
   ExecutorServiceConfiguration.class,
   CamundaActuatorConfiguration.class,
   JsonMapperConfiguration.class,
+  CredentialsProviderConfiguration.class,
+  ZeebeClientProdAutoConfiguration.class
 })
 @AutoConfigureBefore(CamundaClientAllAutoConfiguration.class)
 public class CamundaClientProdAutoConfiguration {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(CamundaClientProdAutoConfiguration.class);
-
-  @Bean
-  @ConditionalOnMissingBean
-  public CredentialsProvider camundaClientCredentialsProvider(
-      final ZeebeClientConfigurationProperties properties,
-      final CamundaClientProperties camundaClientProperties) {
-    final OAuthCredentialsProviderBuilder credBuilder =
-        CredentialsProvider.newCredentialsProviderBuilder()
-            .applyEnvironmentOverrides(false)
-            .clientId(
-                getProperty(
-                    "camunda.client.auth.client-id",
-                    true,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getClientId(),
-                    () -> properties.getCloud().getClientId(),
-                    () -> Environment.system().get("ZEEBE_CLIENT_ID")))
-            .clientSecret(
-                getProperty(
-                    "camunda.client.auth.client-secret",
-                    true,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getClientSecret(),
-                    () -> properties.getCloud().getClientSecret(),
-                    () -> Environment.system().get("ZEEBE_CLIENT_SECRET")))
-            .audience(
-                getProperty(
-                    "camunda.client.auth.audience",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getAudience(),
-                    () -> camundaClientProperties.getZeebe().getAudience(),
-                    () -> properties.getCloud().getAudience()))
-            .scope(
-                getProperty(
-                    "camunda.client.auth.scope",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getScope(),
-                    () -> camundaClientProperties.getZeebe().getScope(),
-                    () -> properties.getCloud().getScope()))
-            .authorizationServerUrl(
-                getProperty(
-                    "camunda.client.auth.issuer",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getIssuer().toString(),
-                    () -> properties.getCloud().getAuthUrl()))
-            .credentialsCachePath(
-                getProperty(
-                    "camunda.client.auth.credentials-cache-path",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getCredentialsCachePath(),
-                    () -> properties.getCloud().getCredentialsCachePath()))
-            .connectTimeout(
-                getProperty(
-                    "camunda.client.auth.connect-timeout",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getConnectTimeout()))
-            .readTimeout(
-                getProperty(
-                    "camunda.client.auth.read-timeout",
-                    false,
-                    null,
-                    null,
-                    () -> camundaClientProperties.getAuth().getReadTimeout()));
-
-    maybeConfigureIdentityProviderSSLConfig(credBuilder, camundaClientProperties);
-    try {
-      return credBuilder.build();
-    } catch (final Exception e) {
-      LOG.warn("Failed to configure credential provider", e);
-      return new NoopCredentialsProvider();
-    }
-  }
-
-  private void maybeConfigureIdentityProviderSSLConfig(
-      final OAuthCredentialsProviderBuilder builder,
-      final CamundaClientProperties camundaClientProperties) {
-    if (camundaClientProperties.getAuth() == null) {
-      return;
-    }
-    if (camundaClientProperties.getAuth().getKeystorePath() != null) {
-      final Path keyStore = Paths.get(camundaClientProperties.getAuth().getKeystorePath());
-      if (Files.exists(keyStore)) {
-        LOG.debug("Using keystore {}", keyStore);
-        builder.keystorePath(keyStore);
-        builder.keystorePassword(camundaClientProperties.getAuth().getKeystorePassword());
-        builder.keystoreKeyPassword(camundaClientProperties.getAuth().getKeystoreKeyPassword());
-      } else {
-        LOG.debug("Keystore {} not found", keyStore);
-      }
-    }
-
-    if (camundaClientProperties.getAuth().getTruststorePath() != null) {
-      final Path trustStore = Paths.get(camundaClientProperties.getAuth().getTruststorePath());
-      if (Files.exists(trustStore)) {
-        LOG.debug("Using truststore {}", trustStore);
-        builder.truststorePath(trustStore);
-        builder.truststorePassword(camundaClientProperties.getAuth().getTruststorePassword());
-      } else {
-        LOG.debug("Truststore {} not found", trustStore);
-      }
-    }
-  }
 
   @Bean
   public CamundaClientConfiguration camundaClientConfiguration(
