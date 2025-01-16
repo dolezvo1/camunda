@@ -42,9 +42,9 @@ public class CamundaAnnotationProcessorRegistry implements BeanPostProcessor, Or
       throws BeansException {
     final ClassInfo beanInfo = ClassInfo.builder().bean(bean).beanName(beanName).build();
 
-    for (final AbstractCamundaAnnotationProcessor zeebePostProcessor : processors) {
-      if (zeebePostProcessor.isApplicableFor(beanInfo)) {
-        zeebePostProcessor.configureFor(beanInfo);
+    for (final AbstractCamundaAnnotationProcessor camundaPostProcessor : processors) {
+      if (camundaPostProcessor.isApplicableFor(beanInfo)) {
+        camundaPostProcessor.configureFor(beanInfo);
       }
     }
 
@@ -52,11 +52,11 @@ public class CamundaAnnotationProcessorRegistry implements BeanPostProcessor, Or
   }
 
   public void startAll(final CamundaClient client) {
-    processors.forEach(zeebePostProcessor -> zeebePostProcessor.start(client));
+    processors.forEach(camundaPostProcessor -> camundaPostProcessor.start(client));
   }
 
   public void stopAll(final CamundaClient client) {
-    processors.forEach(zeebePostProcessor -> zeebePostProcessor.stop(client));
+    processors.forEach(camundaPostProcessor -> camundaPostProcessor.stop(client));
   }
 
   @Override
