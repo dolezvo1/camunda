@@ -36,8 +36,8 @@ public class AnnotationProcessorConfiguration {
 
   @Bean
   public CamundaClientEventListener camundaClientEventListener(
-      final CamundaAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
-    return new CamundaClientEventListener(zeebeAnnotationProcessorRegistry);
+      final CamundaAnnotationProcessorRegistry camundaAnnotationProcessorRegistry) {
+    return new CamundaClientEventListener(camundaAnnotationProcessorRegistry);
   }
 
   @Bean
