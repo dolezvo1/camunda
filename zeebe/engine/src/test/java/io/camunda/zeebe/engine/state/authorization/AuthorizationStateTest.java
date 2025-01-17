@@ -39,7 +39,7 @@ public class AuthorizationStateTest {
     // when
     final var persistedAuth =
         authorizationState.getResourceIdentifiers(
-            1L, AuthorizationResourceType.DEPLOYMENT, PermissionType.CREATE);
+            1L, AuthorizationResourceType.RESOURCE, PermissionType.CREATE);
     // then
     assertThat(persistedAuth).isEmpty();
   }
@@ -48,7 +48,7 @@ public class AuthorizationStateTest {
   void shouldCreatePermissions() {
     // given
     final var ownerKey = 1L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     final var resourceIds = Set.of("foo", "bar");
 
@@ -65,7 +65,7 @@ public class AuthorizationStateTest {
   void shouldUpdatePermissionsIfAlreadyExists() {
     // given
     final var ownerKey = 1L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     final var resourceIds = Set.of("foo", "bar");
     authorizationState.createOrAddPermission(ownerKey, resourceType, permissionType, resourceIds);
@@ -84,7 +84,7 @@ public class AuthorizationStateTest {
     // given
     final var ownerKey1 = 1L;
     final var ownerKey2 = 2L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     authorizationState.createOrAddPermission(
         ownerKey1, resourceType, permissionType, Set.of("foo"));
@@ -105,7 +105,7 @@ public class AuthorizationStateTest {
   void shouldStorePermissionsByResourceType() {
     // given
     final var ownerKey = 1L;
-    final var resourceType1 = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType1 = AuthorizationResourceType.RESOURCE;
     final var resourceType2 = AuthorizationResourceType.PROCESS_DEFINITION;
     final var permissionType = PermissionType.CREATE;
     authorizationState.createOrAddPermission(
@@ -127,7 +127,7 @@ public class AuthorizationStateTest {
   void shouldStorePermissionsByPermissionType() {
     // given
     final var ownerKey = 1L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType1 = PermissionType.CREATE;
     final var permissionType2 = PermissionType.UPDATE;
     authorizationState.createOrAddPermission(
@@ -195,7 +195,7 @@ public class AuthorizationStateTest {
     // given
     final var ownerKey1 = 1L;
     final var ownerKey2 = 2L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     final var resourceId1 = "foo";
     final var resourceId2 = "bar";
@@ -218,7 +218,7 @@ public class AuthorizationStateTest {
   void shouldRemoveSinglePermissionsByOwnerKey() {
     // given
     final var ownerKey = 1L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     final var resourceId1 = "foo";
     final var resourceId2 = "bar";
@@ -238,7 +238,7 @@ public class AuthorizationStateTest {
   void shouldRemoveAllPermissionsByOwnerKey() {
     // given
     final var ownerKey = 1L;
-    final var resourceType = AuthorizationResourceType.DEPLOYMENT;
+    final var resourceType = AuthorizationResourceType.RESOURCE;
     final var permissionType = PermissionType.CREATE;
     final var resourceId1 = "foo";
     final var resourceId2 = "bar";
